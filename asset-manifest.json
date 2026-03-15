@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/rag-system/static/css/main.f386d4f3.css",
+    "main.js": "/rag-system/static/js/main.3c6a64dc.js",
+    "index.html": "/rag-system/index.html",
+    "main.f386d4f3.css.map": "/rag-system/static/css/main.f386d4f3.css.map",
+    "main.3c6a64dc.js.map": "/rag-system/static/js/main.3c6a64dc.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f386d4f3.css",
+    "static/js/main.3c6a64dc.js"
+  ]
+}
