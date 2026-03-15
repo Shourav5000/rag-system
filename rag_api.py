@@ -83,7 +83,7 @@ def upload():
         chunks = build_rag(tmp.name)
 
     return jsonify({
-        "message": f"Document loaded successfully!",
+        "message": "Document loaded successfully!",
         "chunks": chunks,
         "filename": file.filename
     })
@@ -109,6 +109,9 @@ def ask():
 
     return jsonify({"answer": answer, "sources": sources})
 
+# ── This runs both locally and on Render ──────────────────
+port = int(os.environ.get("PORT", 5001))
+
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5001))
-app.run(host="0.0.0.0", port=port, debug=False)
+    print(f"RAG API running on http://localhost:{port}")
+    app.run(host="0.0.0.0", port=port, debug=False)
