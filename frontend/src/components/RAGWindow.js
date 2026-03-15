@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import './RAGWindow.css';
 
+const BACKEND_URL = 'https://rag-system-bx71.onrender.com';
+
 export default function RAGWindow() {
   const [messages, setMessages] = useState([
     { role: 'assistant', content: `👋 Welcome to RAG Document AI! Here's how to get started:
@@ -34,10 +36,14 @@ Try it with a resume, research paper, contract, or any PDF!` }
     const formData = new FormData();
     formData.append('file', file);
     try {
-      const res = await fetch('http://localhost:5001/upload', {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 60000);
+      const res = await fetch(`${BACKEND_URL}/upload`, {
         method: 'POST',
         body: formData,
+        signal: controller.signal
       });
+      clearTimeout(timeout);
       const data = await res.json();
       setDocLoaded(true);
       setDocName(file.name);
@@ -48,7 +54,7 @@ Try it with a resume, research paper, contract, or any PDF!` }
     } catch {
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: '❌ Failed to upload. Make sure the backend is running on port 5001.'
+        content: '❌ Failed to upload. The server may be waking up — please try again in 30 seconds.'
       }]);
     } finally {
       setUploading(false);
@@ -69,11 +75,15 @@ Try it with a resume, research paper, contract, or any PDF!` }
     setMessages(newMessages);
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5001/ask', {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 60000);
+      const res = await fetch(`${BACKEND_URL}/ask`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: text }),
+        signal: controller.signal
       });
+      clearTimeout(timeout);
       const data = await res.json();
       if (data.error) {
         setMessages(prev => [...prev, { role: 'assistant', content: `⚠️ ${data.error}` }]);
@@ -87,7 +97,7 @@ Try it with a resume, research paper, contract, or any PDF!` }
     } catch {
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: '❌ Connection error. Make sure the backend is running on port 5001.'
+        content: '❌ Connection error. The server may be waking up — please try again in 30 seconds.'
       }]);
     } finally {
       setLoading(false);
@@ -96,7 +106,6 @@ Try it with a resume, research paper, contract, or any PDF!` }
 
   return (
     <div className="rag-shell">
-      {/* Header */}
       <div className="rag-header">
         <div className="header-icon">
           <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
@@ -110,7 +119,6 @@ Try it with a resume, research paper, contract, or any PDF!` }
         <div className={`status-dot ${docLoaded ? 'active' : ''}`} />
       </div>
 
-      {/* Upload Zone */}
       {!docLoaded && (
         <div
           className={`upload-zone ${dragOver ? 'drag-over' : ''} ${uploading ? 'uploading' : ''}`}
@@ -145,7 +153,6 @@ Try it with a resume, research paper, contract, or any PDF!` }
         </div>
       )}
 
-      {/* Messages */}
       <div className="messages-area">
         {messages.map((msg, i) => (
           <div key={i} className={`msg ${msg.role}`}>
@@ -178,7 +185,6 @@ Try it with a resume, research paper, contract, or any PDF!` }
         <div ref={bottomRef} />
       </div>
 
-      {/* Input */}
       <div className="input-row">
         {docLoaded && (
           <button
