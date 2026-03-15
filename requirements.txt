@@ -1,0 +1,12 @@
+flask
+flask-cors
+anthropic
+langchain
+langchain-anthropic
+langchain-community
+langchain-text-splitters
+langchain-core
+chromadb
+pypdf
+python-dotenv
+sentence-transformers
