@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600&family=Inter:wght@300;400;500&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0f0f13;
+  --surface: #1a1a24;
+  --surface2: #22222f;
+  --border: rgba(255,255,255,0.08);
+  --accent: #7c6af7;
+  --accent2: #a78bfa;
+  --text: #f0f0f5;
+  --text-muted: #8888aa;
+  --success: #4ade80;
+  --error: #f87171;
+}
+
+body {
+  background: var(--bg);
+  font-family: 'Inter', sans-serif;
+  color: var(--text);
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.bg-orb {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(80px);
+  opacity: 0.15;
+}
+
+.orb-1 { width: 600px; height: 600px; background: #7c6af7; top: -200px; right: -150px; }
+.orb-2 { width: 400px; height: 400px; background: #4f46e5; bottom: -100px; left: -100px; }
