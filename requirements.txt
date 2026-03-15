@@ -9,5 +9,3 @@ langchain-core
 chromadb
 pypdf
 python-dotenv
-sentence-transformers
-pydantic

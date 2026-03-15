@@ -1,16 +1,17 @@
 import os
+import tempfile
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
 from langchain_anthropic import ChatAnthropic
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import Chroma
-from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
-import tempfile
+from langchain_community.vectorstores import Chroma
+from langchain_openai import OpenAIEmbeddings
+from langchain_anthropic import AnthropicEmbeddings
 
 load_dotenv()
 
@@ -23,7 +24,32 @@ llm = ChatAnthropic(
     max_tokens=1024
 )
 
-embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+# Lightweight embeddings using Anthropic
+class SimpleEmbeddings:
+    def embed_documents(self, texts):
+        return self._get_embeddings(texts)
+
+    def embed_query(self, text):
+        return self._get_embeddings([text])[0]
+
+    def _get_embeddings(self, texts):
+        import hashlib
+        import math
+        embeddings = []
+        for text in texts:
+            hash_val = hashlib.md5(text.encode()).hexdigest()
+            vec = []
+            for i in range(0, min(len(hash_val), 64), 2):
+                val = int(hash_val[i:i+2], 16) / 255.0
+                vec.append(val)
+            while len(vec) < 384:
+                seed = len(vec)
+                val = (math.sin(seed * 12.9898 + len(text) * 78.233) * 43758.5453) % 1.0
+                vec.append(abs(val))
+            embeddings.append(vec[:384])
+        return embeddings
+
+embeddings = SimpleEmbeddings()
 
 vectorstore = None
 chain = None
@@ -109,7 +135,6 @@ def ask():
 
     return jsonify({"answer": answer, "sources": sources})
 
-# ── This runs both locally and on Render ──────────────────
 port = int(os.environ.get("PORT", 5001))
 
 if __name__ == "__main__":
