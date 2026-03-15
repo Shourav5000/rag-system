@@ -110,6 +110,5 @@ def ask():
     return jsonify({"answer": answer, "sources": sources})
 
 if __name__ == "__main__":
-    print("RAG API running on http://localhost:5001")
     port = int(os.environ.get("PORT", 5001))
-    app.run(host="0.0.0.0", port=port, debug=False)
+app.run(host="0.0.0.0", port=port, debug=False)
